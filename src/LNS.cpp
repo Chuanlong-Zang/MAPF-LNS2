@@ -193,6 +193,15 @@ bool LNS::run()
     return true;
 }
 
+std::vector<Path> LNS::getPaths() const
+{
+    std::vector<Path> out;
+    out.reserve(agents.size());
+    for (const auto &agent : agents) {
+        out.push_back(agent.path);
+    }
+    return out;
+}
 
 bool LNS::getInitialSolution()
 {

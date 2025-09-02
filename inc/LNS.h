@@ -43,6 +43,8 @@ public:
     void writeResultToFile(const string & file_name) const;
     void writePathsToFile(const string & file_name) const;
     string getSolverName() const override { return "LNS(" + init_algo_name + ";" + replan_algo_name + ")"; }
+    std::vector<Path> getPaths() const;
+
 private:
     InitLNS* init_lns = nullptr;
     string init_algo_name;

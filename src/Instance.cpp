@@ -44,6 +44,69 @@ Instance::Instance(const string& map_fname, const string& agent_fname,
 
 }
 
+Instance::Instance(int rows,
+                   int cols,
+                   const vector<bool>& blocked_row_major,
+                   const vector<int>& start_locations_in,
+                   const vector<int>& goal_locations_in,
+                   int /*warehouse_width*/)
+{
+    // --- basic shape & size checks ------------------------------------------
+    if (rows <= 0 || cols <= 0) {
+        cerr << "Instance(in-memory): rows/cols must be positive." << endl;
+        exit(-1);
+    }
+    if (static_cast<int>(blocked_row_major.size()) != rows * cols) {
+        cerr << "Instance(in-memory): blocked map size mismatch: got "
+             << blocked_row_major.size() << ", expected " << (rows * cols) << endl;
+        exit(-1);
+    }
+    if (start_locations_in.size() != goal_locations_in.size()) {
+        cerr << "Instance(in-memory): starts/goals size mismatch: starts="
+             << start_locations_in.size() << " goals=" << goal_locations_in.size() << endl;
+        exit(-1);
+    }
+
+    // --- assign grid ---------------------------------------------------------
+    num_of_rows = rows;
+    num_of_cols = cols;
+    map_size    = num_of_rows * num_of_cols;
+
+    my_map = blocked_row_major; // IMPORTANT: true == OBSTACLE (matches loadMap())
+
+    // --- assign agents -------------------------------------------------------
+    num_of_agents = static_cast<int>(start_locations_in.size());
+    start_locations = start_locations_in;
+    goal_locations  = goal_locations_in;
+
+    // --- validate agents are in-bounds and on free cells ---------------------
+    auto in_bounds = [this](int v) {
+        return v >= 0 && v < map_size;
+    };
+
+    for (int i = 0; i < num_of_agents; ++i) {
+        int s = start_locations[i];
+        int g = goal_locations[i];
+        if (!in_bounds(s) || !in_bounds(g)) {
+            cerr << "Instance(in-memory): agent " << i << " start/goal out of bounds."
+                 << " start=" << s << " goal=" << g
+                 << " map_size=" << map_size << endl;
+            exit(-1);
+        }
+        if (my_map[s]) {
+            auto rc = getCoordinate(s);
+            cerr << "Instance(in-memory): agent " << i << " start on obstacle at "
+                 << "(" << rc.first << "," << rc.second << ")." << endl;
+            exit(-1);
+        }
+        if (my_map[g]) {
+            auto rc = getCoordinate(g);
+            cerr << "Instance(in-memory): agent " << i << " goal on obstacle at "
+                 << "(" << rc.first << "," << rc.second << ")." << endl;
+            exit(-1);
+        }
+    }
+}
 
 int Instance::randomWalk(int curr, int steps) const
 {

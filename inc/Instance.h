@@ -15,7 +15,12 @@ public:
 	Instance()=default;
 	Instance(const string& map_fname, const string& agent_fname, 
 		int num_of_agents = 0, int num_of_rows = 0, int num_of_cols = 0, int num_of_obstacles = 0, int warehouse_width = 0);
-
+	Instance(int rows,
+		 int cols,
+		 const vector<bool>& blocked_row_major,
+		 const vector<int>& start_locations_in,
+		 const vector<int>& goal_locations_in,
+		 int warehouse_width = 0);
 
 	void printAgents() const;
 	string getMapFile() const {return map_fname;};
