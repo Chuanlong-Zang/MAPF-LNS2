@@ -31,7 +31,7 @@ target_compile_features(mapflns2_core PUBLIC cxx_std_17)
 set_target_properties(mapflns2_core PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
 # Deps used in core
-find_package(Boost REQUIRED)     # header-only is fine for core
+find_package(Boost CONFIG REQUIRED)     # header-only is fine for core
 target_link_libraries(mapflns2_core PUBLIC Boost::boost)
 
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
